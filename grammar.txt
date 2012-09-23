@@ -1,0 +1,23 @@
+FtanML Grammar
+
+value ::= array | element | string | number | "true" | "false" | "null"
+
+string ::= (like a JSON string)
+
+number ::= (like a JSON number)
+
+array ::= "[" (value ("," value)* )? "]"
+
+element ::= "<" (string | name)? pair* ("|" content)?  ">"
+
+pair ::= (string | name) "=" value
+
+name ::= [\p{L}\p{N}:_$]+
+
+content ::= (content-char | escaped-char | element ) *
+
+content-char ::= any char except \, <, >, …?
+
+escaped-char ::= as in JSON + "\<", "\>"
+
+
