@@ -1,23 +1,29 @@
 FtanML Grammar
 
+document ::= (value | implicit-array)?
+
+implicit-array ::= value (array | element | string | (whitespace (number | "true" | "false" | "null")))+
+
 value ::= array | element | string | number | "true" | "false" | "null"
 
-string ::= (like a JSON string)
+array ::= "[" ((value | implicit-array) ("," (value | implicit-array))*)? "]"
 
-number ::= (like a JSON number)
+element ::= "<" name? pair* (value | implicit-array)?  ">"
 
-array ::= "[" (value ("," value)* )? "]"
+string ::= (""" (string-content | "'" | "|")* """) | ("'" (string-content | """ | "|")* "'") | ("|" (string-content | """ | "'")* "|"?)
 
-element ::= "<" (string | name)? pair* ("|" content)?  ">"
+whitespace ::= [\p{Space}]+
 
-pair ::= (string | name) "=" value
+number ::= "-"? (0 | ([1-9] [0-9]*)) ("." [0-9]+)? (("e" | "E") ("+" | "-")? [0-9]+)?
 
-name ::= [\p{L}\p{N}:_$]+
+name ::= name-part (":" name-part)*
 
-content ::= (content-char | escaped-char | element ) *
+pair ::= name "=" value
 
-content-char ::= any char except \, <, >, …?
+string-content ::= ([^<>"'\|] | escaped-char | CDATA | element)
 
-escaped-char ::= as in JSON + "\<", "\>"
+name-part ::= string | [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nd}\p{Nl}\p{No}_$]+
 
+escaped-char ::= "\" ("n" | "r" | "b" | "f" | "t" | "\" | "/" | "<" | ">" | """ | "'" | ("u" [0-9A-Fa-f]+ ";"))
 
+CDATA ::= "\[" *some_character* [^*some_character*]* *some_character* "]" (where *some_character* is one character specific to this CDATA)
